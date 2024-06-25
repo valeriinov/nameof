@@ -26,21 +26,27 @@ class NameofCodeProcessor {
     final classContainerName = 'Nameof${visitor.className}';
 
     buffer.writeln(
-        '/// Container for names of elements belonging to the [${visitor.className}] class');
-    buffer.writeln('abstract class $classContainerName {');
+        '/// Container for names of elements belonging to the [${visitor
+            .className}] class');
+    buffer.writeln('class $classContainerName {');
+
+    buffer.writeln('$classContainerName._();');
+    buffer.writeln();
 
     final className =
-        'static const String className = \'${visitor.className}\';';
+        'final String className = \'${visitor.className}\';';
 
     final constructorNames =
-        _getCodeParts('constructor', visitor.constructors.values);
+    _getCodeParts('constructor', visitor.constructors.values);
 
     final fieldNames = _getCodeParts('field', visitor.fields.values);
 
     final functionNames = _getCodeParts('function', visitor.functions.values);
 
-    final propertyNames = _getFilteredNames(visitor.properties.values).map((prop) =>
-        'static const String property${(prop as PropertyInfo).propertyPrefix}${prop.originalName.capitalize().privatize()} = \'${prop.name}\';');
+    final propertyNames = _getFilteredNames(visitor.properties.values).map((
+        prop) =>
+    'final String property${(prop as PropertyInfo).propertyPrefix}${prop
+        .originalName.capitalize().privatize()} = \'${prop.name}\';');
 
     void writeCode(Iterable<String> codeLines) {
       if (codeLines.isNotEmpty) {
@@ -67,8 +73,8 @@ class NameofCodeProcessor {
 
   Iterable<ElementInfo> _getFilteredNames(Iterable<ElementInfo> infos) {
     Iterable<ElementInfo> result = (options.coverage == Coverage.includeImplicit
-            ? infos.map((e) => e)
-            : infos.where((element) => element.isAnnotated).map((e) => e))
+        ? infos.map((e) => e)
+        : infos.where((element) => element.isAnnotated).map((e) => e))
         .where((element) => !element.isIgnore);
 
     return options.scope == NameofScope.onlyPublic
@@ -76,9 +82,10 @@ class NameofCodeProcessor {
         : result;
   }
 
-  Iterable<String> _getCodeParts(
-      String elementType, Iterable<ElementInfo> elements) {
+  Iterable<String> _getCodeParts(String elementType,
+      Iterable<ElementInfo> elements) {
     return _getFilteredNames(elements).map((element) =>
-        'static const String $elementType${element.scopePrefix}${element.originalName.capitalize().privatize()} = \'${element.name}\';');
+    'final String $elementType${element.scopePrefix}${element.originalName
+        .capitalize().privatize()} = \'${element.name}\';');
   }
 }
